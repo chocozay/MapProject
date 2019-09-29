@@ -25,17 +25,6 @@ class DBOperations:
             Config.db.session.rollback()
             raise
 
-    @staticmethod
-    def delete_from_db(table_name: 'Config.db.Model', username: str):
-        try:
-            table_name.query.filter_by(username=username).delete()
-            Config.db.session.commit()
-            _logger.info('%s user was successfully deleted', username.capitalize())
-        except Exception as exc:
-            _logger.exception('%s user was not deleted due to: %s', username.capitalize(), exc)
-            Config.db.session.rollback()
-            raise
-
 
 class User(Config.db.Model):
     id = Config.db.Column(Config.db.Integer, primary_key=True)
@@ -89,6 +78,17 @@ class User(Config.db.Model):
             message=[user.username for user in User.query.order_by(User.username).all()],
             status_code=Config.OK
         )
+
+    @staticmethod
+    def delete_from_user_db(username: str):
+        try:
+            User.query.filter_by(username=username).delete()
+            Config.db.session.commit()
+            _logger.info('%s user was successfully deleted', username.capitalize())
+        except Exception as exc:
+            _logger.exception('%s user was not deleted due to: %s', username.capitalize(), exc)
+            Config.db.session.rollback()
+            raise
 
 
 class MapData(Config.db.Model):
@@ -144,3 +144,14 @@ class MapData(Config.db.Model):
             message=[result.results for result in MapData.query.filter_by(user_id=user_id).all()],
             status_code=Config.OK
         )
+
+    @staticmethod
+    def delete_from_map_db(username: str):
+        try:
+            MapData.query.filter_by(user_id=User.get_id(username=username)).delete()
+            Config.db.session.commit()
+            _logger.info('%s mapdata was successfully deleted', username.capitalize())
+        except Exception as exc:
+            _logger.exception('%s mapdata was not deleted due to: %s', username.capitalize(), exc)
+            Config.db.session.rollback()
+            raise

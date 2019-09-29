@@ -1,9 +1,12 @@
 import getpass
 from json import loads, load
-
 import logging
-import requests
 from typing import Optional, Dict, Any
+
+import requests
+
+from client_utils import is_tuple
+
 
 domain = "http://0.0.0.0:5000/api/v0/username"
 logging.getLogger(__name__)
@@ -55,13 +58,15 @@ def get_user_history(username: str):
     return history
 
 
-# TODO be implemented
-def get_nearby_location(username: str):
+def get_nearby_location(username: str, coordinates: Optional[str] = None):
     url = f"{domain}/{username}/nearby_locations"
-    pass
+    if coordinates is not None:
+        coordinates = is_tuple(coordinates)
+    return requests.get(url=url, json={'location': coordinates}).json()
 
 
-# TODO be implemented
-def get_address(username: str):
+def get_address(username: str, coordinates: Optional[str] = None):
     url = f"{domain}/{username}/address"
-    pass
+    if coordinates is not None:
+        coordinates = is_tuple(coordinates)
+    return requests.get(url=url, json={'location': coordinates}).json()

@@ -4,6 +4,7 @@ from flask import request
 from sqlalchemy.exc import IntegrityError
 
 from config import Config
+from emailer import send_email
 from model import User, DBOperations, MapData
 from response import MyResponse
 
@@ -18,9 +19,11 @@ def create_profile(user_data: request, username: str) -> MyResponse:
             username=username,
             password=user_data.json.get("password")
         )
-
+        content = f"Profile for {username} was created"
+        email = user_data.json.get('email')
+        send_email(content=content, subject="Profile Created", reciever=email)
         return MyResponse(
-            f"Profile for {username} was created",
+            content,
             Config.CREATED
         )
 
@@ -32,7 +35,8 @@ def create_profile(user_data: request, username: str) -> MyResponse:
 
 def delete_profile(username: str) -> MyResponse:
     try:
-        DBOperations.delete_from_db(table_name=User, username=username)
+        MapData.delete_from_map_db(username=username)
+        User.delete_from_user_db(username=username)
         return MyResponse(
             f"Profile for {username} was deleted",
             Config.DELETED

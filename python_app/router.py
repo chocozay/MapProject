@@ -3,7 +3,7 @@ import logging
 from flask import make_response, request, jsonify
 
 import google_map
-import user
+from python_app import user
 from config import Config
 from response import MyResponse
 
