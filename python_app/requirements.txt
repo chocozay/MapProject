@@ -1,0 +1,8 @@
+requests
+sqlalchemy
+flask
+flask_sqlalchemy
+kubernetes
+gmaps
+psycopg2
+googlemaps
