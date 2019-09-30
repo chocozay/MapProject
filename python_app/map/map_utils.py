@@ -1,9 +1,7 @@
 from random import random, randint
 from typing import Tuple, Dict, Optional, List
 
-from flask import request
-
-from config import Config
+from utils.config import Config
 
 
 def get_random_latitude() -> float:

@@ -46,11 +46,14 @@ def delete_user(username: str):
 
 
 def get_user_history(username: str):
-    history = requests.get(url=f"{domain}/{username}/history").json()
+    response = requests.get(url=f"{domain}/{username}/history")
+    if response.status_code == 404:
+        raise RuntimeError(f"User '{username}' does not exist")
+    history = response.json()
     if not history:
         logging.error("No search history was found")
     for index, results in enumerate([loads(result) for result in history if loads(result)], 1):
-        if isinstance(results, list):
+        if isinstance(results, list) and len(results) > 1:
             for result_index, result in enumerate(results, 1):
                 logging.info("[#%s] Sub results entry: %s\n", result_index, result)
         else:

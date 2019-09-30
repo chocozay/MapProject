@@ -3,10 +3,11 @@ import logging
 from flask import request
 from sqlalchemy.exc import IntegrityError
 
-from config import Config
-from emailer import send_email
-from model import User, DBOperations, MapData
-from response import MyResponse
+from utils.config import Config
+from utils.emailer import send_email
+from db.user_model import User, DBOperations
+from db.mapdata_model import MapData
+from utils.response import MyResponse
 
 _logger = logging.getLogger(__name__)
 
@@ -28,7 +29,7 @@ def create_profile(user_data: request, username: str) -> MyResponse:
         )
 
     except IntegrityError:
-        return MyResponse(f"User {username} already exist", Config.CONFLICT)
+        return MyResponse(f"Username or email already in use", Config.CONFLICT)
     except Exception as exc:
         return MyResponse(f"Error occurred: {exc}", Config.INTERNAL_ERROR)
 
@@ -41,6 +42,8 @@ def delete_profile(username: str) -> MyResponse:
             f"Profile for {username} was deleted",
             Config.DELETED
         )
+    except AttributeError:
+        return MyResponse(f"User '{username}' does not exist", Config.NOT_FOUND)
     except Exception as exc:
         return MyResponse(f"Error occurred: {exc}", Config.INTERNAL_ERROR)
 
